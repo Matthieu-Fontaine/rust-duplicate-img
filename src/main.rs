@@ -1,5 +1,4 @@
 use rfd::FileDialog;
-use std::path::Path;
 use walkdir::WalkDir;
 
 mod custom_file;

@@ -3,7 +3,6 @@ use std::fs;
 use std::fs::File;
 use sha2::{Sha256, Digest};
 use std::io::Read;
-use rfd::FileDialog;
 
 pub struct CustomFile {
     pub path: String,
