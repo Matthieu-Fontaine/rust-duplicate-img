@@ -3,8 +3,9 @@ use std::fs;
 use std::fs::File;
 use sha2::{Sha256, Digest};
 use std::io::Read;
+use rfd::FileDialog;
 
-pub struct customFile {
+pub struct CustomFile {
     pub path: String,
     pub filename: String,
     pub extension: String,
@@ -13,9 +14,9 @@ pub struct customFile {
     pub duplicate: bool,
 }
 
-impl customFile {
-    pub fn new(path: &str) -> customFile {
-        customFile {
+impl CustomFile {
+    pub fn new(path: &str) -> CustomFile {
+        CustomFile {
             path: path.to_string(),
             filename: extract_name(path),
             extension: extract_extension(path),
