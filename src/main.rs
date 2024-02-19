@@ -52,7 +52,7 @@ fn list_files_recursively_v2(dir: &std::path::Path) -> Vec<custom_file::CustomFi
     for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
 
-        println!("{:?}", path);
+        // println!("{:?}", path);
 
         if path.is_file() {
             let custom_file = custom_file::CustomFile::new(path.to_str().unwrap());
