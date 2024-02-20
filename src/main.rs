@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
@@ -12,23 +12,23 @@ mod custom_file;
 fn main() {
     let builder = lauch_main_window();
 
-    // Récupère le FileChooserButton à partir du fichier Glade
     let file_chooser_button: FileChooserButton = builder
         .get_object("folder_chooser_button")
         .expect("Couldn't get file_chooser_button");
 
-    // Récupère le bouton "Lauch"
     let lauch_button: Button = builder
         .get_object("lauch_button")
         .expect("Couldn't get lauch_button");
 
-    //lauch_button.set_sensitive(false);
+    lauch_button.set_sensitive(false);
+
+    let lauch_button_clone = lauch_button.clone();  // Clone le bouton
 
     file_chooser_button.connect_file_set(move |file_chooser_button| {
         if let Some(_filename) = file_chooser_button.get_filename() {
-            //lauch_button.set_sensitive(true);
+            lauch_button_clone.set_sensitive(true);
         } else {
-            //lauch_button.set_sensitive(false);
+            lauch_button_clone.set_sensitive(false);
         }
     });
 
@@ -45,8 +45,6 @@ fn lauch(folder_path: PathBuf) {
     println!("Selected file: {:?}", folder_path);
 
     let dir = Path::new(&folder_path);
-
-    println!("dir: {:?}", dir);
 
     let custom_files = list_files_recursively_v2(dir);
 
@@ -131,16 +129,20 @@ fn image_file_filter(custom_files: Vec<custom_file::CustomFile>) -> Vec<custom_f
 }
 
 fn find_duplicates(image_files: &mut Vec<custom_file::CustomFile>) {
-    let mut seen_hashes = HashSet::new();
+    let mut hash_count: HashMap<String, usize> = HashMap::new();
+
+    // Parcourez les fichiers pour compter les occurrences de chaque hash
+    for file in image_files.iter() {
+        let count = hash_count.entry(file.hash.clone()).or_insert(0);
+        *count += 1;
+    }
 
     for file in image_files.iter_mut() {
-        if seen_hashes.contains(&file.hash) {
-            file.duplicate = true;
-            // if let Some(original_file) = files.iter_mut().find(|&f| f.hash == file.hash) {
-            //     original_file.duplicate = true;
-            // }
-        } else {
-            seen_hashes.insert(file.hash.clone());
+        if let Some(&count) = hash_count.get(&file.hash) {
+            if count > 1 {
+                file.duplicate = true;
+            }
         }
     }
 }
+
